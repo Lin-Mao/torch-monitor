@@ -21,7 +21,7 @@ else
 OFLAGS += -g -O3
 endif
 
-CFLAGS := -fPIC -std=c++17 -I$(TORCH_DIR)/include -I$(TORCH_DIR)/include/torch/csrc/api/include
+CFLAGS := -fPIC -std=c++17 $(OFLAGS) -I$(TORCH_DIR)/include -I$(TORCH_DIR)/include/torch/csrc/api/include
 LDFLAGS := -fPIC -shared -L$(TORCH_DIR)/lib -lc10 -ltorch -Wl,-rpath=$(TORCH_DIR)/lib
 
 SRCS := $(shell find $(SRC_DIR) -maxdepth 3 -name "*.cc")
