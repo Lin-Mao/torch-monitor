@@ -16,10 +16,13 @@ static void driver_callback(torch_monitor_callback_site_t callback_site,
                             torch_monitor_callback_data_t *callback_data) {
   if (callback_site == TORCH_MONITOR_CALLBACK_ENTER) {
     std::cout << "Domain: " << callback_data->domain << std::endl;
-    std::cout << "Start thread id: " << callback_data->start_thread_id << std::endl;
-    std::cout << "Forward thread id: " << callback_data->forward_thread_id << std::endl;
-    std::cout << "Sequence number: " << callback_data->sequence_number << std::endl;
-    std::cout << "Name: " << std::string(callback_data->name) << std::endl;
+    if (callback_data->domain != TORCH_MONITOR_DOMAIN_MEMORY) {
+      std::cout << "Start thread id: " << callback_data->data.op_data.start_thread_id << std::endl;
+      std::cout << "Forward thread id: " << callback_data->data.op_data.forward_thread_id
+                << std::endl;
+      std::cout << "Sequence number: " << callback_data->data.op_data.sequence_number << std::endl;
+      std::cout << "Name: " << std::string(callback_data->data.op_data.name) << std::endl;
+    }
   }
 }
 

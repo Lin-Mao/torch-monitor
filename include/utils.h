@@ -20,10 +20,13 @@
 
 namespace torch_monitor {
 
+const uint64_t TORCH_MONITOR_SEQUENCE_NUMBER_NULL = -1;
+const uint64_t TORCH_MONITOR_HANDLE_NULL = 0;
+
 torch_monitor_domain_t aten_scope_match(at::RecordScope scope);
 
 at::RecordScope torch_monitor_domain_match(torch_monitor_domain_t domain);
 
 }  // namespace torch_monitor
 
-#endif
+#endif  // TORCH_MONITOR_UTILS_H
