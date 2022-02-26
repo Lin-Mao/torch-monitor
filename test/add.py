@@ -8,4 +8,3 @@ grad = torch.zeros(100, device=device)
 for _ in range(10):
     output = torch.add(left, right)
     output.backward(grad)
-

@@ -56,11 +56,11 @@ class TorchProfiler {
    public:
     MemoryState() {}
 
-    virtual bool memoryProfilingEnabled() const override { return true; }
+    bool memoryProfilingEnabled() const override { return true; }
 
     // Memory allocatation callback
-    virtual void reportMemoryUsage(void* ptr, int64_t alloc_size, int64_t total_allocated,
-                                   int64_t total_reserved, c10::Device device) override;
+    void reportMemoryUsage(void* ptr, int64_t alloc_size, int64_t total_allocated,
+                           int64_t total_reserved, c10::Device device) override;
   };
 
   // Generate a memory state for every thread
