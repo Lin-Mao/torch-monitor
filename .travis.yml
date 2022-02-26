@@ -19,9 +19,9 @@ before_script:
   - export CC=gcc-8
   - export CXX=g++-8
   - python3 -m pip install --quiet --upgrade pip
-  - pip3 install torch torchvision torchaudio
+  - pip3 install --user torch torchvision torchaudio
   - mkdir build && cd build
-  - cmake .. -DTORCH_DIR=`pip show torch | grep Location | cut -d ":" -f 2`/torch -DCMAKE_INSTALL_PREFIX=$HOME/torch_monitor ..
+  - cmake .. -DTORCH_DIR=`pip3 show torch | grep Location | cut -d ":" -f 2`/torch -DCMAKE_INSTALL_PREFIX=$HOME/torch_monitor ..
   - make install -j8
   - cd ../driver
   - make TORCH_MONITOR_DIR=$HOME/torch_monitor
