@@ -1,7 +1,6 @@
 dist: bionic
-language: c++
-submodules:
-  - g++
+os: linux
+language: cpp
 addons:
   apt:
     sources:
@@ -13,14 +12,15 @@ addons:
 branches:
   only:
     - main
-before_script:
+before_install:
   # Export CC and CXX to tell cmake which compiler to use
   - export CC=gcc-8
   - export CXX=g++-8
+install:
   - pyenv install 3.8.5
   - pyenv global 3.8.5
-  - python -m ensurepip --upgrade
-  - pip install torch torchvision torchaudio
+  - python -m ensurepip --upgrade &> ./python_log
+  - pip install torch torchvision torchaudio &> ./pip_log
   - export TORCH_DIR=`pip show torch | grep Location | cut -d ":" -f 2`/torch
   - export TORCH_DIR=`echo $TORCH_DIR | xargs echo -n`
   - make TORCH_DIR=$TORCH_DIR -j8
