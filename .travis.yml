@@ -15,9 +15,11 @@ jobs:
       python: 3.8
 branches:
   only:
-    - master
+    - main
 before_script:
   # Export CC and CXX to tell cmake which compiler to use
+  - export CC=gcc-8
+  - export CXX=g++-8
   - pip install torch torchvision torchaudio
   - mkdir build && cd build
   - cmake .. -DTORCH_DIR=`pip show torch | grep Location | cut -d ":" -f 2` -DCMAKE_INSTALL_PREFIX=$HOME/torch_monitor
