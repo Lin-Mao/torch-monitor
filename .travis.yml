@@ -1,0 +1,30 @@
+jobs:
+  include:
+    - language: c++
+      submodules:
+        - g++
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - gcc-8
+            - g++-8
+            - cmake
+    - language: python
+      python: 3.8
+branches:
+  only:
+    - master
+before_script:
+  # Export CC and CXX to tell cmake which compiler to use
+  - pip install torch torchvision torchaudio
+  - mkdir build && cd build
+  - cmake .. -DTORCH_DIR=`pip show torch | grep Location | cut -d ":" -f 2` -DCMAKE_INSTALL_PREFIX=$HOME/torch_monitor
+  - make install -j8
+  - cd ../driver
+  - make TORCH_MONITOR_DIR=$HOME/torch_monitor
+  - cd ..
+script:
+  - cd test
+  - ./test_add.sh

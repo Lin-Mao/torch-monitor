@@ -2,7 +2,7 @@
 
 # Test training of a basic neural network
 
-LD_PRELOAD=$(pwd)/../driver/driver.so python ./mnist.py --epochs 1 > /dev/null
+LD_PRELOAD=$(pwd)/../driver/driver.so python ./mnist.py --epochs 1 --no-cuda --dry-run > /dev/null
 
 ret=$?
 rm -rf ../data
