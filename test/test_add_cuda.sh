@@ -2,7 +2,7 @@
 
 # Unit test of op and mem information
 
-LD_PRELOAD=$(pwd)/../driver/driver.so python ./add.py > ./log
+LD_PRELOAD=$(pwd)/../driver/driver.so python ./add.py cuda > ./log
 
 ret=$?
 rm ./log

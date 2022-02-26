@@ -22,7 +22,9 @@ OFLAGS += -g -O3
 endif
 
 CFLAGS := -fPIC -std=c++17 $(OFLAGS) -I$(TORCH_DIR)/include -I$(TORCH_DIR)/include/torch/csrc/api/include
-LDFLAGS := -fPIC -shared -L$(TORCH_DIR)/lib -Wl,-rpath=$(TORCH_DIR)/lib -lc10 -ltorch -ltorch_cpu
+LDFLAGS := -fPIC -shared -L$(TORCH_DIR)/lib -Wl,-rpath=$(TORCH_DIR)/lib
+# XXX(Keren): Werid problems on travis if libraries are at the end of LDFLAGS
+LIBRARIES := -lc10 -ltorch -ltorch_cpu
 
 SRCS := $(shell find $(SRC_DIR) -maxdepth 3 -name "*.cc")
 OBJECTS := $(addprefix $(BUILD_DIR), $(patsubst %.cc, %.o, $(SRCS)))
@@ -45,7 +47,7 @@ $(LIB_DIR):
 	mkdir -p $@
 
 $(LIB): $(OBJECTS)
-	$(CC) $(LDFLAGS) -o $@ $^ 
+	$(CC) $(LDFLAGS) -o $@ $^ $(LIBRARIES)
 
 $(OBJECTS): $(BUILD_DIR)%.o : %.cc
 	$(CC) $(CFLAGS) -I$(INC_DIR) -o $@ -c $<

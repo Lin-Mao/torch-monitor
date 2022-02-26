@@ -2,7 +2,7 @@
 
 # Test inference of a large neural network
 
-LD_PRELOAD=$(pwd)/../driver/driver.so python ./resnet.py > /dev/null
+LD_PRELOAD=$(pwd)/../driver/driver.so python ./resnet.py cuda > /dev/null
 
 ret=$?
 rm ./dog.jpg

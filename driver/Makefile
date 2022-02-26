@@ -10,7 +10,7 @@ CC := g++
 LIB := $(PROJECT).so
 
 CFLAGS := -fPIC -std=c++17 -I$(TORCH_MONITOR_DIR)/include
-LDFLAGS := -fPIC -shared -L$(TORCH_MONITOR_DIR)/lib -ltorch_monitor -Wl,-rpath=$(TORCH_MONITOR_DIR)/lib
+LDFLAGS := -fPIC -shared -L$(TORCH_MONITOR_DIR)/lib -Wl,-rpath=$(TORCH_MONITOR_DIR)/lib
 
 SRCS := $(PROJECT).cc
 OBJECTS := $(PROJECT).o
@@ -20,7 +20,7 @@ all: lib
 lib: $(LIB)
 
 $(LIB): $(SRCS)
-	$(CC) $(CFLAGS) $(LDFLAGS) -I$(TORCH_MONITOR_DIR)/include -o $@ $<
+	$(CC) $(CFLAGS) $(LDFLAGS) -I$(TORCH_MONITOR_DIR)/include -o $@ $< -ltorch_monitor
 
 clean:
 	-rm -rf $(PROJECT).so

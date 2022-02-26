@@ -1,6 +1,8 @@
 import torch
+import sys
 
-device = torch.device("cpu") 
+device = str(sys.argv[1])
+device = torch.device(device) 
 left = torch.zeros(100, device=device, requires_grad=True)
 right = torch.zeros(100, device=device, requires_grad=True)
 grad = torch.zeros(100, device=device)

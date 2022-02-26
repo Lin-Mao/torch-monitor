@@ -21,13 +21,16 @@ before_script:
   - pyenv global 3.8.5
   - python -m ensurepip --upgrade
   - mkdir build && cd build
+  - pip install torch torchvision torchaudio
   - export TORCH_DIR=`pip show torch | grep Location | cut -d ":" -f 2`/torch
   - export TORCH_DIR=`echo $TORCH_DIR | xargs echo -n`
-  - cmake .. -DTORCH_DIR=$TORCH_DIR -DCMAKE_INSTALL_PREFIX=$HOME/torch_monitor ..
-  - make install -j8
-  - cd ../driver
+  - make TORCH_DIR=$TORCH_DIR -j8
+  - make install PREFIX=$HOME/torch_monitor
+  - cd driver
   - make TORCH_MONITOR_DIR=$HOME/torch_monitor
   - cd ..
 script:
   - cd test
-  - ./test_add.sh
+  - ./test_add_cpu.sh
+  - ./test_mnist_cpu.sh
+  - ./test_resnet_cpu.sh
