@@ -20,7 +20,6 @@ before_script:
   - pyenv install 3.8.5
   - pyenv global 3.8.5
   - python -m ensurepip --upgrade
-  - mkdir build && cd build
   - pip install torch torchvision torchaudio
   - export TORCH_DIR=`pip show torch | grep Location | cut -d ":" -f 2`/torch
   - export TORCH_DIR=`echo $TORCH_DIR | xargs echo -n`
