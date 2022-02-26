@@ -10,6 +10,7 @@ addons:
       - gcc-8
       - g++-8
       - cmake
+      - python3-pip
 branches:
   only:
     - main
