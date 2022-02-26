@@ -1,6 +1,6 @@
 import torch
 
-device = torch.device("cuda:0") 
+device = torch.device("cpu") 
 left = torch.zeros(100, device=device, requires_grad=True)
 right = torch.zeros(100, device=device, requires_grad=True)
 grad = torch.zeros(100, device=device)

@@ -22,7 +22,7 @@ OFLAGS += -g -O3
 endif
 
 CFLAGS := -fPIC -std=c++17 $(OFLAGS) -I$(TORCH_DIR)/include -I$(TORCH_DIR)/include/torch/csrc/api/include
-LDFLAGS := -fPIC -shared -L$(TORCH_DIR)/lib -lc10 -ltorch -Wl,-rpath=$(TORCH_DIR)/lib
+LDFLAGS := -fPIC -shared -L$(TORCH_DIR)/lib -Wl,-rpath=$(TORCH_DIR)/lib -lc10 -ltorch -ltorch_cpu
 
 SRCS := $(shell find $(SRC_DIR) -maxdepth 3 -name "*.cc")
 OBJECTS := $(addprefix $(BUILD_DIR), $(patsubst %.cc, %.o, $(SRCS)))

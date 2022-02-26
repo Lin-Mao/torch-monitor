@@ -10,7 +10,6 @@ addons:
       - gcc-8
       - g++-8
       - cmake
-      - python3-pip
 branches:
   only:
     - main
@@ -18,10 +17,13 @@ before_script:
   # Export CC and CXX to tell cmake which compiler to use
   - export CC=gcc-8
   - export CXX=g++-8
-  - python3 -m pip install --quiet --upgrade pip
-  - pip3 install --user torch torchvision torchaudio
+  - pyenv install 3.8.5
+  - pyenv global 3.8.5
+  - python -m ensurepip --upgrade
   - mkdir build && cd build
-  - cmake .. -DTORCH_DIR=`pip3 show torch | grep Location | cut -d ":" -f 2`/torch -DCMAKE_INSTALL_PREFIX=$HOME/torch_monitor ..
+  - export TORCH_DIR=`pip show torch | grep Location | cut -d ":" -f 2`/torch
+  - export TORCH_DIR=`echo $TORCH_DIR | xargs echo -n`
+  - cmake .. -DTORCH_DIR=$TORCH_DIR -DCMAKE_INSTALL_PREFIX=$HOME/torch_monitor ..
   - make install -j8
   - cd ../driver
   - make TORCH_MONITOR_DIR=$HOME/torch_monitor

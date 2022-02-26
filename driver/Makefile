@@ -20,7 +20,7 @@ all: lib
 lib: $(LIB)
 
 $(LIB): $(SRCS)
-	$(CC) $(CFLAGS) $(LDFLAGS) -I$(INC_DIR) -I$(TORCH_MONITOR_DIR)/include -o $@ $<
+	$(CC) $(CFLAGS) $(LDFLAGS) -I$(TORCH_MONITOR_DIR)/include -o $@ $<
 
 clean:
 	-rm -rf $(PROJECT).so
