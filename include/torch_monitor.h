@@ -72,22 +72,43 @@ typedef enum torch_monitor_callback_site {
 
 /**
  * @brief Information of each aten operation
+ * The <forward_thread_id, sequence_number> pair records the
+ * the last forward operation with specific forward thread id and sequence number.
+ * We attribute a backward operation to the master frame of that operation.
+ * There can be multiple <1, 0> pairs, the backward operation with seq=0 only
+ * attributes to the most recent forward operation with seq=0.
  *
  */
 typedef struct torch_monitor_op_data {
-  uint64_t start_thread_id;
   uint64_t forward_thread_id;
   uint64_t sequence_number;
+  // An aten op calls another aten op
+  //               op1->op2->op3
+  // nested_level: 0->1->2
+  //               |
+  //             master
+  uint32_t nested_level;
   const char *name;
 } torch_monitor_op_data_t;
+
+/**
+ * @brief Memory allocation or free
+ *
+ */
+typedef enum torch_monitor_mem_data_type {
+  TORCH_MONITOR_MEM_DATA_ALLOC = 0,
+  TORCH_MONITOR_MEM_DATA_FREE = 1,
+  TORCH_MONITOR_MEM_DATA_COUNT = 2
+} torch_monitor_mem_data_type_t;
 
 /**
  * @brief Information of each torch memory alloc operation
  *
  */
 typedef struct torch_monitor_mem_data {
+  torch_monitor_mem_data_type_t type;
   void *ptr;
-  int64_t alloc_size;
+  int64_t size;
   int64_t total_allocated;
   int64_t total_reserved;
 } torch_monitor_mem_data_t;
@@ -98,6 +119,8 @@ typedef struct torch_monitor_mem_data {
  */
 typedef struct torch_monitor_callback_data {
   torch_monitor_domain_t domain;
+  uint64_t current_thread_id;
+
   // data can be casted using domain to
   // torch_monitor_callback_op_data_t
   // torch_monitor_callback_mem_data_t

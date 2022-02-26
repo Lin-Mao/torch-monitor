@@ -16,6 +16,8 @@ class TorchProfiler {
 
   void disable_memory_profiling() { _is_memory_profiling_enabled = false; }
 
+  bool is_memory_profiling_enabled() { return _is_memory_profiling_enabled; }
+
   // true: register success
   // false: register fail
   bool register_domain(torch_monitor_domain_t domain);
@@ -77,10 +79,6 @@ class TorchProfiler {
 
  private:
   bool _is_memory_profiling_enabled = false;
-
-  at::CallbackHandle _handle = TORCH_MONITOR_HANDLE_NULL;
-
-  torch_monitor_callback_func_t _callback = nullptr;
 };
 
 }  // namespace torch_monitor

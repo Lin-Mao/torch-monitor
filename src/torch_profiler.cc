@@ -2,25 +2,6 @@
 
 namespace torch_monitor {
 
-void TorchProfiler::MemoryState::reportMemoryUsage(void* ptr, int64_t alloc_size,
-                                                   int64_t total_allocated, int64_t total_reserved,
-                                                   c10::Device device) {
-  LOG_INFO("ptr: %p", ptr);
-  LOG_INFO("alloc_size: %llu", alloc_size);
-  LOG_INFO("total_allocated: %llu", total_allocated);
-  LOG_INFO("total_reserved: %llu", total_reserved);
-
-  torch_monitor_callback_data_t callback_data;
-  callback_data.domain = TORCH_MONITOR_DOMAIN_MEMORY;
-  callback_data.data.mem_data.ptr = ptr;
-  callback_data.data.mem_data.alloc_size = alloc_size;
-  callback_data.data.mem_data.total_allocated = total_allocated;
-  callback_data.data.mem_data.total_reserved = total_reserved;
-
-  auto& profiler = TorchProfiler::instance();
-  profiler._callback(TORCH_MONITOR_CALLBACK_ENTER, &callback_data);
-}
-
 // A global state variable
 // Since Aten record function does not capture anything,
 // TorchProfilerState must be a static variable
@@ -31,11 +12,10 @@ struct TorchProfilerState {
 
   torch_monitor_callback_func_t callback = nullptr;
 
-  static void clear() {
-    auto& profiler = instance();
-    profiler.callback = nullptr;
-    profiler.handle = TORCH_MONITOR_HANDLE_NULL;
-    profiler.scopes.clear();
+  void clear() {
+    callback = nullptr;
+    handle = TORCH_MONITOR_HANDLE_NULL;
+    this->scopes.clear();
   }
 
   static TorchProfilerState& instance() {
@@ -46,6 +26,28 @@ struct TorchProfilerState {
  private:
   TorchProfilerState() {}
 };
+
+void TorchProfiler::MemoryState::reportMemoryUsage(void* ptr, int64_t alloc_size,
+                                                   int64_t total_allocated, int64_t total_reserved,
+                                                   c10::Device device) {
+  LOG_INFO("ptr: %p", ptr);
+  LOG_INFO("alloc_size: %llu", alloc_size);
+  LOG_INFO("total_allocated: %llu", total_allocated);
+  LOG_INFO("total_reserved: %llu", total_reserved);
+
+  torch_monitor_callback_data_t callback_data;
+  callback_data.domain = TORCH_MONITOR_DOMAIN_MEMORY;
+  callback_data.current_thread_id = at::RecordFunction::currentThreadId();
+  callback_data.data.mem_data.type =
+      alloc_size < 0 ? TORCH_MONITOR_MEM_DATA_FREE : TORCH_MONITOR_MEM_DATA_ALLOC;
+  callback_data.data.mem_data.ptr = ptr;
+  callback_data.data.mem_data.size = alloc_size < 0 ? -alloc_size : alloc_size;
+  callback_data.data.mem_data.total_allocated = total_allocated;
+  callback_data.data.mem_data.total_reserved = total_reserved;
+
+  auto& instance = TorchProfilerState::instance();
+  instance.callback(TORCH_MONITOR_CALLBACK_ENTER, &callback_data);
+}
 
 bool TorchProfiler::init_callback_data(const at::RecordFunction& fn,
                                        torch_monitor_callback_data_t& callback_data) {
@@ -68,8 +70,8 @@ bool TorchProfiler::init_callback_data(const at::RecordFunction& fn,
   }
 
   callback_data.domain = domain;
-  callback_data.data.op_data.start_thread_id = fn.threadId();
-  callback_data.data.op_data.forward_thread_id = fn.threadId();
+  callback_data.current_thread_id = fn.currentThreadId();
+  callback_data.data.op_data.forward_thread_id = fn.forwardThreadId();
   callback_data.data.op_data.sequence_number = fn.seqNr();
   callback_data.data.op_data.name = fn.name().str();
 
@@ -84,23 +86,32 @@ TorchProfiler& TorchProfiler::instance() {
 // True: if a domain is registered
 // False: if a domain is not registered
 bool TorchProfiler::has_domain(torch_monitor_domain_t domain) {
-  at::RecordScope scope = torch_monitor_domain_match(domain);
-  if (scope == at::RecordScope::NUM_SCOPES) {
-    return false;
+  if (domain == TORCH_MONITOR_DOMAIN_MEMORY) {
+    return is_memory_profiling_enabled();
+  } else {
+    at::RecordScope scope = torch_monitor_domain_match(domain);
+    if (scope == at::RecordScope::NUM_SCOPES) {
+      return false;
+    }
+    auto& instance = TorchProfilerState::instance();
+    return instance.scopes.find(scope) != instance.scopes.end();
   }
-  auto& instance = TorchProfilerState::instance();
-  return instance.scopes.find(scope) != instance.scopes.end();
 }
 
 // True: register success
 // False: register fail
 bool TorchProfiler::register_domain(torch_monitor_domain_t domain) {
-  at::RecordScope scope = torch_monitor_domain_match(domain);
-  if (scope == at::RecordScope::NUM_SCOPES) {
-    return false;
+  if (domain == TORCH_MONITOR_DOMAIN_MEMORY) {
+    enable_memory_profiling();
+    return true;
+  } else {
+    at::RecordScope scope = torch_monitor_domain_match(domain);
+    if (scope == at::RecordScope::NUM_SCOPES) {
+      return false;
+    }
+    TorchProfilerState::instance().scopes.insert(scope);
+    return true;
   }
-  TorchProfilerState::instance().scopes.insert(scope);
-  return true;
 }
 
 // True: register success
@@ -115,6 +126,11 @@ bool TorchProfiler::register_callback(torch_monitor_callback_func_t callback) {
 }
 
 bool TorchProfiler::start_profiling() {
+  auto& instance = TorchProfilerState::instance();
+  if (instance.callback == nullptr || instance.scopes.empty()) {
+    return false;
+  }
+
   auto handle = at::addGlobalCallback(
       at::RecordFunctionCallback(
           [](const at::RecordFunction& fn) -> std::unique_ptr<at::ObserverContext> {
@@ -140,7 +156,7 @@ bool TorchProfiler::start_profiling() {
           .scopes(TorchProfilerState::instance().scopes));
 
   if (handle != TORCH_MONITOR_HANDLE_NULL) {
-    TorchProfilerState::instance().handle = handle;
+    instance.handle = handle;
     return true;
   }
 
@@ -148,7 +164,7 @@ bool TorchProfiler::start_profiling() {
 }
 
 bool TorchProfiler::stop_profiling() {
-  TorchProfilerState::clear();
+  TorchProfilerState::instance().clear();
   return true;
 }
 
@@ -165,10 +181,11 @@ bool TorchProfiler::start_memory_profiling() {
 }
 
 bool TorchProfiler::stop_memory_profiling() {
-  if (has_domain(TORCH_MONITOR_DOMAIN_MEMORY)) {
+  if (is_memory_profiling_enabled()) {
     // XXX(Keren): torch monitor cannot be used together with kineto
     // Both register the profiler_state to ThreadLocalDebugInfo
     if (c10::ThreadLocalDebugInfo::_pop(c10::DebugInfoKind::PROFILER_STATE) != nullptr) {
+      disable_memory_profiling();
       return true;
     } else {
       return false;
