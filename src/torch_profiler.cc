@@ -58,7 +58,7 @@ bool TorchProfiler::init_callback_data(const at::RecordFunction& fn,
   LOG_INFO("active: %u", fn.isActive());
   LOG_INFO("sequence_number: %llu", fn.seqNr());
   LOG_INFO("logical_thread_id: %llu", fn.currentThreadId());
-  LOG_INFO("name: %s", fn.name().str());
+  LOG_INFO("name: %s", fn.name());
 
   if (fn.seqNr() == TORCH_PROFILER_SEQUENCE_NUMBER_NULL) {
     return false;
@@ -73,7 +73,7 @@ bool TorchProfiler::init_callback_data(const at::RecordFunction& fn,
   callback_data.current_thread_id = fn.currentThreadId();
   callback_data.data.op_data.forward_thread_id = fn.forwardThreadId();
   callback_data.data.op_data.sequence_number = fn.seqNr();
-  callback_data.data.op_data.name = fn.name().str();
+  callback_data.data.op_data.name = fn.name();
 
   return true;
 }
