@@ -8,13 +8,13 @@ namespace torch_monitor {
 struct TorchProfilerState {
   std::unordered_set<at::RecordScope> scopes;
 
-  at::CallbackHandle handle = TORCH_MONITOR_HANDLE_NULL;
+  at::CallbackHandle handle = TorchProfiler::TORCH_PROFILER_HANDLE_NULL;
 
   torch_monitor_callback_func_t callback = nullptr;
 
   void clear() {
     callback = nullptr;
-    handle = TORCH_MONITOR_HANDLE_NULL;
+    handle = TorchProfiler::TORCH_PROFILER_HANDLE_NULL;
     this->scopes.clear();
   }
 
@@ -60,7 +60,7 @@ bool TorchProfiler::init_callback_data(const at::RecordFunction& fn,
   LOG_INFO("logical_thread_id: %llu", fn.currentThreadId());
   LOG_INFO("name: %s", fn.name().str());
 
-  if (fn.seqNr() == TORCH_MONITOR_SEQUENCE_NUMBER_NULL) {
+  if (fn.seqNr() == TORCH_PROFILER_SEQUENCE_NUMBER_NULL) {
     return false;
   }
 
@@ -155,7 +155,7 @@ bool TorchProfiler::start_profiling() {
           .needsOutputs(false)  // TODO(Keren): monitor outputs if needed?
           .scopes(TorchProfilerState::instance().scopes));
 
-  if (handle != TORCH_MONITOR_HANDLE_NULL) {
+  if (handle != TORCH_PROFILER_HANDLE_NULL) {
     instance.handle = handle;
     return true;
   }

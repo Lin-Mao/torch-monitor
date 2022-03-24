@@ -2,6 +2,7 @@
 
 #include <torch/all.h>
 
+#include "python_state.h"
 #include "torch_profiler.h"
 #include "utils.h"
 
@@ -113,6 +114,33 @@ EXTERNC torch_monitor_status_t torch_monitor_thread_finalize() {
   }
 
   LOG_INFO("Exit torch_monitor_thread_finalize");
+
+  return status;
+}
+
+EXTERNC torch_monitor_status_t torch_monitor_python_state_get(torch_monitor_python_state_t **states,
+                                                              size_t num_states) {
+  LOG_INFO("Enter torch_monitor_python_state_get");
+
+  torch_monitor_status_t status;
+
+  auto &python_state_monitor = PythonStateMonitor::instance();
+
+  auto &python_states = python_state_monitor.get_states();
+
+  if (python_states.empty()) {
+    status = TORCH_MONITOR_STATUS_PYTHON_STATES_NULL;
+  } else {
+    status = TORCH_MONITOR_STATUS_SUCCESS;
+
+    for (size_t i = 0; i < python_states.size() && i < num_states; ++i) {
+      states[i]->file_name = python_states[i].file_name.c_str();
+      states[i]->function_name = python_states[i].function_name.c_str();
+      states[i]->lineno = python_states[i].lineno;
+    }
+  }
+
+  LOG_INFO("Exit torch_monitor_python_state_get");
 
   return status;
 }

@@ -49,6 +49,10 @@ class TorchProfiler {
   // Get the singleton instance
   static TorchProfiler& instance();
 
+ public:
+  const static int64_t TORCH_PROFILER_SEQUENCE_NUMBER_NULL = -1;
+  const static int64_t TORCH_PROFILER_HANDLE_NULL = 0;
+
  private:
   TorchProfiler() {}
 

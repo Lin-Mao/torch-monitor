@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.1)
+cmake_minimum_required (VERSION 3.12)
 project (torch_monitor)
 
 # The version number.
@@ -10,12 +10,18 @@ if ("${TORCH_DIR}" STREQUAL "")
 	message(SEND_ERROR "TORCH_DIR must be specified")
 endif()
 
+find_package(Python COMPONENTS Interpreter Development)
+if (NOT ${Python_FOUND})
+  message(SEND_ERROR "PYTHON not found")
+endif()
+
 set(CMAKE_BUILD_TYPE RelWithDebInfo)
 set(CMAKE_CXX_FLAGS_RELEASE "-O3" CACHE STRING "")
 set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O3 -g" CACHE STRING "")
 set(CMAKE_CXX_FLAGS_DEBUG "-g -DDEBUG" CACHE STRING "")
 set(TORCH_LINKER_FLAGS "-L${TORCH_DIR}/lib -Wl,-rpath=${TORCH_DIR}/lib -lc10 -ltorch -ltorch_cpu")
-set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${TORCH_LINKER_FLAGS}")
+set(PYTHON_LINKER_FLAGS "-L${Python_LIBRARY_DIRS} -Wl,-rpath=${Python_LIBRARY_DIRS} -lpython3")
+set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${TORCH_LINKER_FLAGS} ${PYTHON_LINKER_FLAGS}")
 set(CMAKE_POSITION_INDEPENDENT_CODE ON CACHE BOOL "")
 set(CMAKE_CXX_STANDARD 17)
 
@@ -24,7 +30,7 @@ set(TORCH_INCLUDE_DIR "${TORCH_DIR}/include")
 set(TORCH_C_INCLUDE_DIR "${TORCH_DIR}/include/torch/csrc/api/include")
 set(SOURCES_DIR "${PROJECT_SOURCE_DIR}/src")
 
-include_directories(${INCLUDE_DIR} ${TORCH_INCLUDE_DIR} ${TORCH_C_INCLUDE_DIR})
+include_directories(${INCLUDE_DIR} ${TORCH_INCLUDE_DIR} ${TORCH_C_INCLUDE_DIR} ${Python_INCLUDE_DIRS})
 
 file(GLOB SOURCES "${SOURCES_DIR}/*.cc")
 

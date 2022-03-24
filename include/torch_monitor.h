@@ -1,6 +1,7 @@
 #ifndef TORCH_MONITOR_H
 #define TORCH_MONITOR_H
 
+#include <stddef.h>
 #include <stdint.h>
 
 #ifdef __cplusplus
@@ -23,7 +24,8 @@ typedef enum torch_monitor_status {
   TORCH_MONITOR_STATUS_SUBSCRIBE_SUBSCRIBER_NULL = 6,
   TORCH_MONITOR_STATUS_FINALIZE_NOT_INIT = 7,
   TORCH_MONITOR_STATUS_FINALIZE_MEMORY_FAIL = 8,
-  TORCH_MONITOR_STATUS_COUNT = 9
+  TORCH_MONITOR_STATUS_PYTHON_STATES_NULL = 9,
+  TORCH_MONITOR_STATUS_COUNT = 10
 } torch_monitor_status_t;
 
 /**
@@ -114,6 +116,16 @@ typedef struct torch_monitor_mem_data {
 } torch_monitor_mem_data_t;
 
 /**
+ * @brief Information about each python frame
+ *
+ */
+typedef struct torch_monitor_python_state {
+  const char *file_name;
+  const char *function_name;
+  size_t lineno;
+} torch_monitor_python_state_t;
+
+/**
  * @brief General callback information container
  *
  */
@@ -143,7 +155,7 @@ typedef void (*torch_monitor_callback_func_t)(torch_monitor_callback_site_t call
 /**
  * @brief A callback that handles callback_data at each pytorch function enter/exit
  *
- * @param func
+ * @param func The callback to register
  * @return torch_monitor_status_t
  *
  * @note not thread safe
@@ -154,7 +166,7 @@ EXTERNC torch_monitor_status_t torch_monitor_callback_subscribe(torch_monitor_ca
 /**
  * @brief Enable a domain to be monitored
  *
- * @param domain
+ * @param domain The domain to monitor
  * @return torch_monitor_status_t
  *
  * @note not thread safe
@@ -163,14 +175,17 @@ EXTERNC torch_monitor_status_t torch_monitor_callback_subscribe(torch_monitor_ca
 EXTERNC torch_monitor_status_t torch_monitor_enable_domain(torch_monitor_domain_t domain);
 
 /**
- * @brief Return the python state of the query thread
+ * @brief Query the python states of the query thread
  *
+ * @param states An array of states allocated by the tool but not torch_monitor
+ * @param num_states Returns up to num_states frames
  * @return torch_monitor_status_t
  *
  * @note: not thread safe
  *
  */
-EXTERNC torch_monitor_status_t torch_monitor_python_state();
+EXTERNC torch_monitor_status_t torch_monitor_python_state_get(torch_monitor_python_state_t **states,
+                                                              size_t num_states);
 
 /**
  * @brief Start monitoring pytorch functions in registered domains.
