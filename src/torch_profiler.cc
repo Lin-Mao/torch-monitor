@@ -1,5 +1,7 @@
 #include "torch_profiler.h"
 
+#include "utils.h"
+
 namespace torch_monitor {
 
 // A global state variable
@@ -58,7 +60,11 @@ bool TorchProfiler::init_callback_data(const at::RecordFunction& fn,
   LOG_INFO("active: %u", fn.isActive());
   LOG_INFO("sequence_number: %llu", fn.seqNr());
   LOG_INFO("logical_thread_id: %llu", fn.currentThreadId());
+#if TORCH_MAJOR_VERSION > 1 && TORCH_MINOR_VERSION > 11
   LOG_INFO("name: %s", fn.name());
+#else
+  LOG_INFO("name: %s", fn.name().str());
+#endif
 
   if (fn.seqNr() == TORCH_PROFILER_SEQUENCE_NUMBER_NULL) {
     return false;
@@ -73,7 +79,11 @@ bool TorchProfiler::init_callback_data(const at::RecordFunction& fn,
   callback_data.current_thread_id = fn.currentThreadId();
   callback_data.data.op_data.forward_thread_id = fn.forwardThreadId();
   callback_data.data.op_data.sequence_number = fn.seqNr();
+#if TORCH_MAJOR_VERSION > 1 && TORCH_MINOR_VERSION > 11
   callback_data.data.op_data.name = fn.name();
+#else
+  callback_data.data.op_data.name = fn.name().str();
+#endif
 
   return true;
 }

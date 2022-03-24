@@ -1,7 +1,7 @@
 #ifndef TORCH_MONITOR_UTILS_H
 #define TORCH_MONITOR_UTILS_H
 
-#include <torch/all.h>
+#include <torch/extension.h>
 
 #include <cstdio>
 

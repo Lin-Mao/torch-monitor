@@ -1,8 +1,6 @@
 #ifndef TORCH_MONITOR_TORCH_PROFILER_H
 #define TORCH_MONITOR_TORCH_PROFILER_H
 
-#include <torch/all.h>
-
 #include <unordered_set>
 
 #include "torch_monitor.h"

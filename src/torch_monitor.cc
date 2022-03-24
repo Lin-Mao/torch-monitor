@@ -1,7 +1,5 @@
 #include "torch_monitor.h"
 
-#include <torch/all.h>
-
 #include "python_state.h"
 #include "torch_profiler.h"
 #include "utils.h"

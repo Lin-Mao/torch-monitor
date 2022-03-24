@@ -34,7 +34,7 @@ class PythonStateMonitor {
 
  private:
   // Cached states for each thread
-  static thread_local std::vector<PythonState> _states;
+  static inline thread_local std::vector<PythonState> _states;
 };
 
 }  // namespace torch_monitor

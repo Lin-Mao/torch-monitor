@@ -2,7 +2,6 @@
 
 #include <Python.h>
 #include <pybind11/pybind11.h>
-#include <torch/csrc/utils/python_strings.h>
 
 #include "utils.h"
 
