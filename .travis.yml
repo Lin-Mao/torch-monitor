@@ -21,12 +21,14 @@ install:
   - pyenv global 3.8.5
   - python -m ensurepip --upgrade &> ./python_log
   - pip install torch torchvision torchaudio &> ./pip_log
+  - export PYTHON_INCLUDE_DIR=/opt/pyenv/versions/3.8.5/include/python3.8
+  - export PYTHON_LIB_DIR=/opt/pyenv/versions/3.8.5/lib
   - export TORCH_DIR=`pip show torch | grep Location | cut -d ":" -f 2`/torch
   - export TORCH_DIR=`echo $TORCH_DIR | xargs echo -n`
   - make TORCH_DIR=$TORCH_DIR -j8
   - make install PREFIX=$HOME/torch_monitor
   - cd driver
-  - make TORCH_MONITOR_DIR=$HOME/torch_monitor
+  - make TORCH_MONITOR_DIR=$HOME/torch_monitor PYTHON_INCLUDE_DIR=$PYTHON_INCLUDE_DIR PYTHON_LIB_DIR=$PYTHON_LIB_DIR
   - cd ..
 script:
   - cd test
