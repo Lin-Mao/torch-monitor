@@ -20,7 +20,7 @@ install:
   - pyenv install 3.8.5
   - pyenv global 3.8.5
   - python -m ensurepip --upgrade &> ./python_log
-  - pip install torch torchvision torchaudio &> ./pip_log
+  - pip3 install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cpu &> ./pip_log
   - export PYTHON_INCLUDE_DIR=/opt/pyenv/versions/3.8.5/include/python3.8
   - export PYTHON_LIB_DIR=/opt/pyenv/versions/3.8.5/lib
   - export TORCH_DIR=`pip show torch | grep Location | cut -d ":" -f 2`/torch
