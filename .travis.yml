@@ -25,10 +25,10 @@ install:
   - export PYTHON_LIB_DIR=/opt/pyenv/versions/3.8.5/lib
   - export TORCH_DIR=`pip show torch | grep Location | cut -d ":" -f 2`/torch
   - export TORCH_DIR=`echo $TORCH_DIR | xargs echo -n`
-  - make TORCH_DIR=$TORCH_DIR -j8
+  - make TORCH_DIR=$TORCH_DIR -j8 PYTHON_INCLUDE_DIR=$PYTHON_INCLUDE_DIR PYTHON_LIB_DIR=$PYTHON_LIB_DIR
   - make install PREFIX=$HOME/torch_monitor
   - cd driver
-  - make TORCH_MONITOR_DIR=$HOME/torch_monitor PYTHON_INCLUDE_DIR=$PYTHON_INCLUDE_DIR PYTHON_LIB_DIR=$PYTHON_LIB_DIR
+  - make TORCH_MONITOR_DIR=$HOME/torch_monitor
   - cd ..
 script:
   - cd test
