@@ -8,7 +8,7 @@ namespace torch_monitor {
 // Since Aten record function does not capture anything,
 // TorchProfilerState must be a static variable
 struct TorchProfilerState {
-  std::unordered_set<at::RecordScope> scopes;
+  std::unordered_set<at::RecordScope, std::hash<at::RecordScope>> scopes;
 
   at::CallbackHandle handle = TorchProfiler::TORCH_PROFILER_HANDLE_NULL;
 
@@ -58,7 +58,7 @@ bool TorchProfiler::init_callback_data(const at::RecordFunction& fn,
   LOG_INFO("scope: %u", fn.scope());
   LOG_INFO("async: %u", fn.isAsync());
   LOG_INFO("active: %u", fn.isActive());
-  LOG_INFO("sequence_number: %llu", fn.seqNr());
+  LOG_INFO("sequence_number: %lld", fn.seqNr());
   LOG_INFO("logical_thread_id: %llu", fn.currentThreadId());
 #if TORCH_VERSION_MAJOR >= 1 && TORCH_VERSION_MINOR >= 11
   LOG_INFO("name: %s", fn.name());

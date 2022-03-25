@@ -83,7 +83,7 @@ typedef enum torch_monitor_callback_site {
  */
 typedef struct torch_monitor_op_data {
   uint64_t forward_thread_id;
-  uint64_t sequence_number;
+  int64_t sequence_number;
   // An aten op calls another aten op
   //               op1->op2->op3
   // nested_level: 0->1->2
