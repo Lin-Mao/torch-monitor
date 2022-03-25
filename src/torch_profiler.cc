@@ -59,7 +59,7 @@ bool TorchProfiler::init_callback_data(const at::RecordFunction& fn,
   LOG_INFO("async: %u", fn.isAsync());
   LOG_INFO("active: %u", fn.isActive());
   LOG_INFO("sequence_number: %lld", fn.seqNr());
-  LOG_INFO("logical_thread_id: %llu", fn.currentThreadId());
+  LOG_INFO("logical_thread_id: %llu", at::RecordFunction::currentThreadId());
 #if TORCH_VERSION_MAJOR >= 1 && TORCH_VERSION_MINOR >= 11
   LOG_INFO("name: %s", fn.name());
 #else
@@ -77,7 +77,7 @@ bool TorchProfiler::init_callback_data(const at::RecordFunction& fn,
   }
 
   callback_data.domain = domain;
-  callback_data.current_thread_id = fn.currentThreadId();
+  callback_data.current_thread_id = at::RecordFunction::currentThreadId();
   callback_data.data.op_data.forward_thread_id = fn.forwardThreadId();
   callback_data.data.op_data.sequence_number = fn.seqNr();
 #if TORCH_VERSION_MAJOR >= 1 && TORCH_VERSION_MINOR >= 11
