@@ -24,7 +24,7 @@ endif
 CFLAGS := -fPIC -std=c++17 $(OFLAGS) -I$(TORCH_DIR)/include -I$(TORCH_DIR)/include/torch/csrc/api/include -I$(PYTHON_INCLUDE_DIR)
 LDFLAGS := -fPIC -shared -L$(TORCH_DIR)/lib -Wl,-rpath=$(TORCH_DIR)/lib -L$(PYTHON_LIB_DIR) -Wl,-rpath=$(PYTHON_LIB_DIR)
 # XXX(Keren): Werid problems on travis if libraries are at the end of LDFLAGS
-LIBRARIES := -lc10 -ltorch -ltorch_cpu -lpython3
+LIBRARIES := -lc10 -ltorch -ltorch_cpu -lpython$(PYTHON_VERSION)
 
 SRCS := $(shell find $(SRC_DIR) -maxdepth 3 -name "*.cc")
 OBJECTS := $(addprefix $(BUILD_DIR), $(patsubst %.cc, %.o, $(SRCS)))
