@@ -116,8 +116,9 @@ EXTERNC torch_monitor_status_t torch_monitor_thread_finalize() {
   return status;
 }
 
-EXTERNC torch_monitor_status_t torch_monitor_python_state_get(torch_monitor_python_state_t **states,
-                                                              size_t num_states) {
+EXTERNC torch_monitor_status_t torch_monitor_python_state_get(size_t max_num_states,
+                                                              torch_monitor_python_state_t *states,
+                                                              size_t *num_states) {
   LOG_INFO("Enter torch_monitor_python_state_get");
 
   torch_monitor_status_t status;
@@ -131,11 +132,12 @@ EXTERNC torch_monitor_status_t torch_monitor_python_state_get(torch_monitor_pyth
   } else {
     status = TORCH_MONITOR_STATUS_SUCCESS;
 
-    for (size_t i = 0; i < python_states.size() && i < num_states; ++i) {
-      states[i]->file_name = python_states[i].file_name.c_str();
-      states[i]->function_name = python_states[i].function_name.c_str();
-      states[i]->lineno = python_states[i].lineno;
+    for (size_t i = 0; i < python_states.size() && i < max_num_states; ++i) {
+      states[i].file_name = python_states[i].file_name.c_str();
+      states[i].function_name = python_states[i].function_name.c_str();
+      states[i].lineno = python_states[i].lineno;
     }
+    *num_states = python_states.size();
   }
 
   LOG_INFO("Exit torch_monitor_python_state_get");

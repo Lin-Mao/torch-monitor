@@ -177,15 +177,17 @@ EXTERNC torch_monitor_status_t torch_monitor_enable_domain(torch_monitor_domain_
 /**
  * @brief Query the python states of the query thread
  *
+ * @param max_num_states Returns up to num_states frames
  * @param states An array of states allocated by the tool but not torch_monitor
- * @param num_states Returns up to num_states frames
+ * @param num_states Number of states collected
  * @return torch_monitor_status_t
  *
  * @note: not thread safe
  *
  */
-EXTERNC torch_monitor_status_t torch_monitor_python_state_get(torch_monitor_python_state_t **states,
-                                                              size_t num_states);
+EXTERNC torch_monitor_status_t torch_monitor_python_state_get(size_t max_num_states,
+                                                              torch_monitor_python_state_t *states,
+                                                              size_t *num_states);
 
 /**
  * @brief Start monitoring pytorch functions in registered domains.

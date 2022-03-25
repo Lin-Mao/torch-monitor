@@ -24,12 +24,12 @@ std::string PythonStateMonitor::unpack_pyobject(PyObject* obj) {
     const char* data = PyUnicode_AsUTF8AndSize(obj, &size);
     if (!data) {
       // If we get any runtime error, just return an empty string to continue running
-      LOG_INFO("obj %p utf8 parsing error", ptr);
+      LOG_INFO("obj %p utf8 parsing error", obj);
       return "";
     }
     return std::string(data, (size_t)size);
   }
-  LOG_INFO("obj %p not bytes or unicode", ptr);
+  LOG_INFO("obj %p not bytes or unicode", obj);
   return "";
 }
 

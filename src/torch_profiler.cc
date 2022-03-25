@@ -55,7 +55,7 @@ bool TorchProfiler::init_callback_data(const at::RecordFunction& fn,
                                        torch_monitor_callback_data_t& callback_data) {
   LOG_INFO("thread_id: %llu", fn.threadId());
   LOG_INFO("forward_thread_id: %llu", fn.forwardThreadId());
-  LOG_INFO("scope: %llu", fn.scope());
+  LOG_INFO("scope: %u", fn.scope());
   LOG_INFO("async: %u", fn.isAsync());
   LOG_INFO("active: %u", fn.isActive());
   LOG_INFO("sequence_number: %llu", fn.seqNr());
@@ -66,9 +66,10 @@ bool TorchProfiler::init_callback_data(const at::RecordFunction& fn,
   LOG_INFO("name: %s", fn.name().str());
 #endif
 
-  if (fn.seqNr() == TORCH_PROFILER_SEQUENCE_NUMBER_NULL) {
-    return false;
-  }
+  // seqNr == TORCH_PROFILER_SEQUENCE_NUMBER_NULL means this op is not associated with a backprop op
+  // if (fn.seqNr() == TORCH_PROFILER_SEQUENCE_NUMBER_NULL) {
+  //   return false;
+  // }
 
   auto domain = aten_scope_match(fn.scope());
   if (domain == TORCH_MONITOR_DOMAIN_COUNT) {
