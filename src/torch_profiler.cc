@@ -33,7 +33,7 @@ void TorchProfiler::MemoryState::reportMemoryUsage(void* ptr, int64_t alloc_size
                                                    int64_t total_allocated, int64_t total_reserved,
                                                    c10::Device device) {
   LOG_INFO("ptr: %p", ptr);
-  LOG_INFO("alloc_size: %llu", alloc_size);
+  LOG_INFO("alloc_size: %lld", alloc_size);
   LOG_INFO("total_allocated: %llu", total_allocated);
   LOG_INFO("total_reserved: %llu", total_reserved);
 
