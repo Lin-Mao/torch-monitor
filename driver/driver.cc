@@ -23,7 +23,8 @@ thread_local static torch_monitor_python_state_t python_states[MAX_NUM_STATES];
 
 static void python_state_report() {
   size_t num_states = 0;
-  TORCH_MONITOR_CALL(torch_monitor_python_state_get, (MAX_NUM_STATES, python_states, &num_states));
+  // Allow empty states
+  torch_monitor_python_state_get(MAX_NUM_STATES, python_states, &num_states);
   for (size_t i = 0; i < num_states; ++i) {
     std::cout << "(" << i << ") "
               << "File: " << std::string(python_states[i].file_name) << std::endl;
