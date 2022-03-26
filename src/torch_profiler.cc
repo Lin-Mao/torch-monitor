@@ -51,8 +51,14 @@ void TorchProfiler::MemoryState::reportMemoryUsage(void* ptr, int64_t alloc_size
   instance.callback(TORCH_MONITOR_CALLBACK_ENTER, &callback_data);
 }
 
-bool TorchProfiler::init_callback_data(const at::RecordFunction& fn,
+bool TorchProfiler::init_callback_data(torch_monitor_callback_site_t callback_site,
+                                       const at::RecordFunction& fn,
                                        torch_monitor_callback_data_t& callback_data) {
+  static thread_local uint32_t nested_level = 0;
+  if (callback_site == TORCH_MONITOR_CALLBACK_EXIT) {
+    --nested_level;
+  }
+
   LOG_INFO("thread_id: %llu", fn.threadId());
   LOG_INFO("forward_thread_id: %llu", fn.forwardThreadId());
   LOG_INFO("scope: %u", fn.scope());
@@ -60,6 +66,7 @@ bool TorchProfiler::init_callback_data(const at::RecordFunction& fn,
   LOG_INFO("active: %u", fn.isActive());
   LOG_INFO("sequence_number: %lld", fn.seqNr());
   LOG_INFO("logical_thread_id: %llu", at::RecordFunction::currentThreadId());
+  LOG_INFO("level: %u", nested_level);
 #if TORCH_VERSION_MAJOR >= 1 && TORCH_VERSION_MINOR >= 11
   LOG_INFO("name: %s", fn.name());
 #else
@@ -80,11 +87,16 @@ bool TorchProfiler::init_callback_data(const at::RecordFunction& fn,
   callback_data.current_thread_id = at::RecordFunction::currentThreadId();
   callback_data.data.op_data.forward_thread_id = fn.forwardThreadId();
   callback_data.data.op_data.sequence_number = fn.seqNr();
+  callback_data.data.op_data.nested_level = nested_level;
 #if TORCH_VERSION_MAJOR >= 1 && TORCH_VERSION_MINOR >= 11
   callback_data.data.op_data.name = fn.name();
 #else
   callback_data.data.op_data.name = fn.name().str();
 #endif
+
+  if (callback_site == TORCH_MONITOR_CALLBACK_ENTER) {
+    ++nested_level;
+  }
 
   return true;
 }
@@ -145,17 +157,18 @@ bool TorchProfiler::start_profiling() {
   auto handle = at::addGlobalCallback(
       at::RecordFunctionCallback(
           [](const at::RecordFunction& fn) -> std::unique_ptr<at::ObserverContext> {
+            LOG_INFO("Enter function");
+
             torch_monitor_callback_data_t callback_data = {};
-            if (init_callback_data(fn, callback_data)) {
+            if (init_callback_data(TORCH_MONITOR_CALLBACK_ENTER, fn, callback_data)) {
               TorchProfilerState::instance().callback(TORCH_MONITOR_CALLBACK_ENTER, &callback_data);
             }
 
-            LOG_INFO("Enter function");
             return nullptr;
           },
           [](const at::RecordFunction& fn, at::ObserverContext* ctx_ptr) {
             torch_monitor_callback_data_t callback_data = {};
-            if (init_callback_data(fn, callback_data)) {
+            if (init_callback_data(TORCH_MONITOR_CALLBACK_EXIT, fn, callback_data)) {
               TorchProfilerState::instance().callback(TORCH_MONITOR_CALLBACK_EXIT, &callback_data);
             }
 

@@ -76,7 +76,8 @@ class TorchProfiler {
 
   // true: init success
   // false: init fail
-  static bool init_callback_data(const at::RecordFunction& fn,
+  static bool init_callback_data(torch_monitor_callback_site_t callback_site,
+                                 const at::RecordFunction& fn,
                                  torch_monitor_callback_data_t& callback_data);
 
  private:
