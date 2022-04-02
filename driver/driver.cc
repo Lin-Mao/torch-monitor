@@ -16,8 +16,12 @@
 
 // If python call path is enabled
 volatile static bool python_state_enable = false;
+// If timestamp is obtained
 volatile static bool timestamp_enable = false;
+// If the gdb is attached for GDB
 volatile static bool driver_debug = false;
+// If callback data are printed out
+volatile static bool verbose = true;
 // Maximum number of call path frames
 const static size_t MAX_NUM_STATES = 30;
 // Call path buffer
@@ -37,7 +41,14 @@ static void python_state_report() {
 
 static void driver_callback(torch_monitor_callback_site_t callback_site,
                             torch_monitor_callback_data_t* callback_data) {
+  // If debug is enabled, hanging there and invoke GDB
   while (driver_debug) {
+  }
+
+  // If verbose is disabled, do not print anything.
+  // It can be used to measure the wrapping overhead brought by torch-monitor
+  if (!verbose) {
+    return;
   }
 
   if (callback_site == TORCH_MONITOR_CALLBACK_ENTER) {
@@ -100,6 +111,12 @@ void driver_env_init() {
   if (const char* env = std::getenv("TORCH_MONITOR_TIMESTAMP_ENABLE")) {
     if (std::atoi(env) == 1) {
       timestamp_enable = true;
+    }
+  }
+
+  if (const char* env = std::getenv("TORCH_MONITOR_VERBOSE_DISABLE")) {
+    if (std::atoi(env) == 1) {
+      verbose = false;
     }
   }
 }
