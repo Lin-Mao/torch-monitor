@@ -54,12 +54,7 @@ typedef enum torch_monitor_domain {
   TORCH_MONITOR_DOMAIN_STATIC_RUNTIME_MODEL = 9,
   // Memory allocation
   TORCH_MONITOR_DOMAIN_MEMORY = 10,
-  // Python state, support passive and active queries
-  // In the active mode, states (e.g., call path) can be obtained using torch_monitor_python_state
-  // In the passive mode, states are returned with torch_monitor_callback_data
-  TORCH_MONITOR_DOMAIN_PYTOHN_STATE_PASSIVE = 11,
-  TORCH_MONITOR_DOMAIN_PYTOHN_STATE_ACTIVE = 12,
-  TORCH_MONITOR_DOMAIN_COUNT = 13
+  TORCH_MONITOR_DOMAIN_COUNT = 11
 } torch_monitor_domain_t;
 
 /**
