@@ -33,4 +33,8 @@ if torch.cuda.is_available() and device == 'cuda':
     input_batch = input_batch.to(device)
     model.to(device)
 
+start = time.time()
 output = model(input_batch)
+end = time.time()
+
+print('{:.2f}s'.format(end - start))
