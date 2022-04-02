@@ -1,5 +1,6 @@
 #include <torch_monitor.h>
 
+#include <chrono>
 #include <cstdlib>
 #include <iostream>
 #include <string>
@@ -15,6 +16,7 @@
 
 // If python call path is enabled
 volatile static bool python_state_enable = false;
+volatile static bool timestamp_enable = false;
 volatile static bool driver_debug = false;
 // Maximum number of call path frames
 const static size_t MAX_NUM_STATES = 30;
@@ -46,7 +48,13 @@ static void driver_callback(torch_monitor_callback_site_t callback_site,
                 << std::endl;
       std::cout << "Sequence number: " << callback_data->data.op_data.sequence_number << std::endl;
       std::cout << "Name: " << std::string(callback_data->data.op_data.name) << std::endl;
-      std::cout << "Level: " << callback_data->data.op_data.nested_level << std::endl;
+      if (timestamp_enable) {
+        std::cout << "Enter level: " << callback_data->data.op_data.nested_level << " at "
+                  << std::chrono::duration_cast<std::chrono::nanoseconds>(
+                         std::chrono::system_clock::now().time_since_epoch())
+                         .count()
+                  << std::endl;
+      }
       if (python_state_enable) {
         python_state_report();
       }
@@ -63,6 +71,16 @@ static void driver_callback(torch_monitor_callback_site_t callback_site,
       std::cout << "Total size: " << callback_data->data.mem_data.total_allocated << std::endl;
       std::cout << "Total reserved: " << callback_data->data.mem_data.total_reserved << std::endl;
     }
+  } else if (callback_site == TORCH_MONITOR_CALLBACK_EXIT) {
+    if (callback_data->domain != TORCH_MONITOR_DOMAIN_MEMORY) {
+      if (timestamp_enable) {
+        std::cout << "Exit level: " << callback_data->data.op_data.nested_level << " at "
+                  << std::chrono::duration_cast<std::chrono::nanoseconds>(
+                         std::chrono::system_clock::now().time_since_epoch())
+                         .count()
+                  << std::endl;
+      }
+    }
   }
 }
 
@@ -76,6 +94,12 @@ void driver_env_init() {
   if (const char* env = std::getenv("TORCH_MONITOR_DRIVER_DEBUG")) {
     if (std::atoi(env) == 1) {
       driver_debug = true;
+    }
+  }
+
+  if (const char* env = std::getenv("TORCH_MONITOR_TIMESTAMP_ENABLE")) {
+    if (std::atoi(env) == 1) {
+      timestamp_enable = true;
     }
   }
 }
