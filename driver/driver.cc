@@ -46,6 +46,7 @@ static void driver_callback(torch_monitor_callback_site_t callback_site,
                 << std::endl;
       std::cout << "Sequence number: " << callback_data->data.op_data.sequence_number << std::endl;
       std::cout << "Name: " << std::string(callback_data->data.op_data.name) << std::endl;
+      std::cout << "Level: " << callback_data->data.op_data.nested_level << std::endl;
       if (python_state_enable) {
         python_state_report();
       }
