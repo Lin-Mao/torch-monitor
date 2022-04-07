@@ -71,7 +71,7 @@ typedef enum torch_monitor_callback_site {
  * @brief The state of a PyTorch thread
  *
  */
-typedef enum torch_monitor_thread_state_state {
+typedef enum torch_monitor_thread_state {
   TORCH_MONITOR_THREAD_STATE_FORWARD = 0x1,
   TORCH_MONITOR_THREAD_STATE_BACKWARD = (0x1 << 1),
   TORCH_MONITOR_THREAD_STATE_OPTIMIZER = (0x1 << 2),
