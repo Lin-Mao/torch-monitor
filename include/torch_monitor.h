@@ -180,7 +180,7 @@ EXTERNC torch_monitor_status_t torch_monitor_callback_subscribe(torch_monitor_ca
  * @note not thread safe
  *
  */
-EXTERNC torch_monitor_status_t torch_monitor_enable_domain(torch_monitor_domain_t domain);
+EXTERNC torch_monitor_status_t torch_monitor_domain_enable(torch_monitor_domain_t domain);
 
 /**
  * @brief Query the python states of the query thread

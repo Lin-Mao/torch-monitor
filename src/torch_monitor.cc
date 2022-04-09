@@ -28,8 +28,8 @@ torch_monitor_callback_subscribe(torch_monitor_callback_func_t func) {
   return status;
 }
 
-EXTERNC torch_monitor_status_t torch_monitor_enable_domain(torch_monitor_domain_t domain) {
-  LOG_INFO("Enter torch_monitor_enable_domain");
+EXTERNC torch_monitor_status_t torch_monitor_domain_enable(torch_monitor_domain_t domain) {
+  LOG_INFO("Enter torch_monitor_domain_enable");
 
   torch_monitor_status_t status;
 
@@ -41,7 +41,7 @@ EXTERNC torch_monitor_status_t torch_monitor_enable_domain(torch_monitor_domain_
     status = TORCH_MONITOR_STATUS_ENABLE_DOMAIN_OUT_RANGE;
   }
 
-  LOG_INFO("Exit torch_monitor_enable_domain");
+  LOG_INFO("Exit torch_monitor_domain_enable");
   return status;
 }
 
