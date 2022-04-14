@@ -46,9 +46,10 @@ std::vector<PythonState>& PythonStateMonitor::get_states(bool cached) {
 
   while (nullptr != frame) {
     size_t lineno = PyCode_Addr2Line(frame->f_code, frame->f_lasti);
+    size_t co_firstlineno = frame->f_code->co_firstlineno;
     std::string file_name = unpack_pyobject(frame->f_code->co_filename);
     std::string function_name = unpack_pyobject(frame->f_code->co_name);
-    _states.emplace_back(PythonState{file_name, function_name, lineno});
+    _states.emplace_back(PythonState{file_name, function_name, co_firstlineno, lineno});
     frame = frame->f_back;
   }
   return _states;

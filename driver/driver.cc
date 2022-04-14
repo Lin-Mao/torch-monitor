@@ -35,7 +35,8 @@ static void python_state_report() {
     std::cout << "(" << i << ") "
               << "File: " << std::string(python_states[i].file_name) << std::endl;
     std::cout << "\tFunction: " << std::string(python_states[i].function_name) << std::endl;
-    std::cout << "\tLine: " << python_states[i].lineno << std::endl;
+    std::cout << "\tFirst line: " << python_states[i].function_first_lineno << std::endl;
+    std::cout << "\tCall at line: " << python_states[i].lineno << std::endl;
   }
 }
 

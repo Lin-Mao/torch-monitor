@@ -91,6 +91,7 @@ typedef enum torch_monitor_thread_state {
  */
 typedef struct torch_monitor_op_data {
   uint64_t forward_thread_id;
+  // sequence_number = -1 means this op does not have a backward counterpart
   int64_t sequence_number;
   // An aten op calls another aten op
   //               op1->op2->op3
@@ -130,6 +131,7 @@ typedef struct torch_monitor_mem_data {
 typedef struct torch_monitor_python_state {
   const char *file_name;
   const char *function_name;
+  size_t function_first_lineno;
   size_t lineno;
 } torch_monitor_python_state_t;
 

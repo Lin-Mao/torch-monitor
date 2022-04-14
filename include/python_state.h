@@ -13,10 +13,15 @@ namespace torch_monitor {
 struct PythonState {
   std::string file_name;
   std::string function_name;
+  size_t function_first_lineno;
   size_t lineno;
 
-  PythonState(const std::string &file_name, const std::string &function_name, size_t lineno)
-      : file_name(file_name), function_name(function_name), lineno(lineno) {}
+  PythonState(const std::string &file_name, const std::string &function_name,
+              size_t function_first_lineno, size_t lineno)
+      : file_name(file_name),
+        function_name(function_name),
+        function_first_lineno(function_first_lineno),
+        lineno(lineno) {}
 };
 
 class PythonStateMonitor {

@@ -136,6 +136,7 @@ EXTERNC torch_monitor_status_t torch_monitor_python_state_get(size_t max_num_sta
     for (size_t i = 0; i < *num_states; ++i) {
       states[i].file_name = python_states[i].file_name.c_str();
       states[i].function_name = python_states[i].function_name.c_str();
+      states[i].function_first_lineno = python_states[i].function_first_lineno;
       states[i].lineno = python_states[i].lineno;
     }
   }
