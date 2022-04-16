@@ -72,6 +72,7 @@ typedef enum torch_monitor_callback_site {
  *
  */
 typedef enum torch_monitor_thread_state {
+  TORCH_MONITOR_THREAD_STATE_NONE = 0x0,
   TORCH_MONITOR_THREAD_STATE_FORWARD = 0x1,
   TORCH_MONITOR_THREAD_STATE_BACKWARD = (0x1 << 1),
   TORCH_MONITOR_THREAD_STATE_OPTIMIZER = (0x1 << 2),
@@ -198,14 +199,6 @@ EXTERNC torch_monitor_status_t torch_monitor_domain_enable(torch_monitor_domain_
 EXTERNC torch_monitor_status_t torch_monitor_python_state_get(size_t max_num_states,
                                                               torch_monitor_python_state_t *states,
                                                               size_t *num_states);
-
-/**
- * @brief Query the current thread's state
- *
- * @param state Returns the PyTorch state
- * @return torch_monitor_status_t
- */
-EXTERNC torch_monitor_status_t torch_monitor_thread_state_get(torch_monitor_thread_state_t *state);
 
 /**
  * @brief Start monitoring pytorch functions in registered domains.
