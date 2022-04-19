@@ -7,7 +7,7 @@ set(GBOLT_VERSION_MINOR 0)
 
 set(TORCH_DIR "" CACHE STRING "PyTorch install path")
 if ("${TORCH_DIR}" STREQUAL "")
-	message(SEND_ERROR "TORCH_DIR must be specified")
+  message(SEND_ERROR "TORCH_DIR must be specified")
 endif()
 
 find_package(Python COMPONENTS Interpreter Development)
@@ -36,6 +36,6 @@ set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES PUBLIC_HEADER "${INCLUDE_
 
 install(TARGETS ${CMAKE_PROJECT_NAME}
         ARCHIVE DESTINATION lib
-				LIBRARY DESTINATION lib
-				COMPONENT library
-				PUBLIC_HEADER DESTINATION include)
+	LIBRARY DESTINATION lib
+	COMPONENT library
+	PUBLIC_HEADER DESTINATION include)
