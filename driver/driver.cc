@@ -79,6 +79,13 @@ static void driver_callback(torch_monitor_callback_site_t callback_site,
         std::cout << "Free ptr: 0x" << std::hex << callback_data->data.mem_data.ptr << std::dec
                   << std::endl;
       }
+      if (callback_data->data.mem_data.device_type == TORCH_MONITOR_DEVICE_TYPE_CPU) {
+        std::cout << "Device: CPU" << std::endl;
+      } else if (callback_data->data.mem_data.device_type == TORCH_MONITOR_DEVICE_TYPE_GPU) {
+        std::cout << "Device: GPU" << std::endl;
+      } else {
+        std::cout << "Device: Other" << std::endl;
+      }
       std::cout << "Size: " << callback_data->data.mem_data.size << std::endl;
       std::cout << "Total size: " << callback_data->data.mem_data.total_allocated << std::endl;
       std::cout << "Total reserved: " << callback_data->data.mem_data.total_reserved << std::endl;

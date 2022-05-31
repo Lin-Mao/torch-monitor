@@ -24,6 +24,8 @@ torch_monitor_domain_t aten_scope_match(at::RecordScope scope);
 
 at::RecordScope torch_monitor_domain_match(torch_monitor_domain_t domain);
 
+torch_monitor_device_type_t aten_device_type_match(at::DeviceType device_type);
+
 }  // namespace torch_monitor
 
 #endif  // TORCH_MONITOR_UTILS_H

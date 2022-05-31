@@ -42,6 +42,7 @@ void TorchProfiler::MemoryState::reportMemoryUsage(void* ptr, int64_t alloc_size
   callback_data.current_thread_id = at::RecordFunction::currentThreadId();
   callback_data.data.mem_data.type =
       alloc_size < 0 ? TORCH_MONITOR_MEM_DATA_FREE : TORCH_MONITOR_MEM_DATA_ALLOC;
+  callback_data.data.mem_data.device_type = aten_device_type_match(device.type());
   callback_data.data.mem_data.ptr = ptr;
   callback_data.data.mem_data.size = alloc_size < 0 ? -alloc_size : alloc_size;
   callback_data.data.mem_data.total_allocated = total_allocated;

@@ -68,6 +68,17 @@ typedef enum torch_monitor_callback_site {
 } torch_monitor_callback_site_t;
 
 /**
+ * @brief The device type of a memory or operation
+ *
+ */
+typedef enum torch_monitor_device_type {
+  TORCH_MONITOR_DEVICE_TYPE_CPU = 0,
+  TORCH_MONITOR_DEVICE_TYPE_GPU = 1,
+  TORCH_MONITOR_DEVICE_TYPE_FPGA = 2,
+  TORCH_MONITOR_DEVICE_TYPE_COUNT = 3
+} torch_monitor_device_type_t;
+
+/**
  * @brief The state of a PyTorch thread
  *
  */
@@ -119,6 +130,7 @@ typedef enum torch_monitor_mem_data_type {
  */
 typedef struct torch_monitor_mem_data {
   torch_monitor_mem_data_type_t type;
+  torch_monitor_device_type_t device_type;
   void *ptr;
   int64_t size;
   int64_t total_allocated;

@@ -26,4 +26,18 @@ at::RecordScope torch_monitor_domain_match(torch_monitor_domain_t domain) {
   }
 }
 
+torch_monitor_device_type_t aten_device_type_match(at::DeviceType device_type) {
+  switch (device_type) {
+    case at::DeviceType::CPU:
+      return TORCH_MONITOR_DEVICE_TYPE_CPU;
+    case at::DeviceType::CUDA:
+    case at::DeviceType::HIP:
+      return TORCH_MONITOR_DEVICE_TYPE_GPU;
+    case at::DeviceType::FPGA:
+      return TORCH_MONITOR_DEVICE_TYPE_FPGA;
+    default:
+      return TORCH_MONITOR_DEVICE_TYPE_COUNT;
+  }
+}
+
 }  // namespace torch_monitor
