@@ -61,8 +61,13 @@ class TorchProfiler {
     bool memoryProfilingEnabled() const override { return true; }
 
     // Memory allocatation callback
+#if TORCH_VERSION_MAJOR >= 2
+    void reportMemoryUsage(void* ptr, int64_t alloc_size, size_t total_allocated,
+                           size_t total_reserved, c10::Device device) override;
+#else
     void reportMemoryUsage(void* ptr, int64_t alloc_size, int64_t total_allocated,
                            int64_t total_reserved, c10::Device device) override;
+#endif
   };
 
   // Generate a memory state for every thread

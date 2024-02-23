@@ -30,7 +30,7 @@ struct TorchProfilerState {
 };
 
 void TorchProfiler::MemoryState::reportMemoryUsage(void* ptr, int64_t alloc_size,
-                                                   int64_t total_allocated, int64_t total_reserved,
+                                                   size_t total_allocated, size_t total_reserved,
                                                    c10::Device device) {
   LOG_INFO("ptr: %p", ptr);
   LOG_INFO("alloc_size: %lld", alloc_size);
@@ -68,10 +68,10 @@ bool TorchProfiler::init_callback_data(torch_monitor_callback_site_t callback_si
   LOG_INFO("sequence_number: %lld", fn.seqNr());
   LOG_INFO("logical_thread_id: %llu", at::RecordFunction::currentThreadId());
   LOG_INFO("level: %u", nested_level);
-#if TORCH_VERSION_MAJOR >= 1 && TORCH_VERSION_MINOR >= 11
-  LOG_INFO("name: %s", fn.name());
+#if TORCH_VERSION_MAJOR <= 1 && TORCH_VERSION_MINOR < 11
+  callback_data.data.op_data.name = fn.name().str();
 #else
-  LOG_INFO("name: %s", fn.name().str());
+  callback_data.data.op_data.name = fn.name();
 #endif
 
   // seqNr == TORCH_PROFILER_SEQUENCE_NUMBER_NULL means this op is not associated with a backprop op
@@ -89,10 +89,10 @@ bool TorchProfiler::init_callback_data(torch_monitor_callback_site_t callback_si
   callback_data.data.op_data.forward_thread_id = fn.forwardThreadId();
   callback_data.data.op_data.sequence_number = fn.seqNr();
   callback_data.data.op_data.nested_level = nested_level;
-#if TORCH_VERSION_MAJOR >= 1 && TORCH_VERSION_MINOR >= 11
-  callback_data.data.op_data.name = fn.name();
-#else
+#if TORCH_VERSION_MAJOR <= 1 && TORCH_VERSION_MINOR < 11
   callback_data.data.op_data.name = fn.name().str();
+#else
+  callback_data.data.op_data.name = fn.name();
 #endif
 
   if (callback_site == TORCH_MONITOR_CALLBACK_ENTER) {
